@@ -1,0 +1,54 @@
+{
+  "name": "aiCodeDoc",
+  "displayName": "AI Code Doc",
+  "version": "0.0.1",
+  "description": "Chrome Extension that uses openAI's API to add inline comments to a snippet of code.`r`nSelect the snippet on a web page and click on the extension icon to preview then generate the documented result. You can optionally save to a local .md for record keeping.`r`nAI Code Doc uses the OpenAI GPT-3.5 chat API endpoints with your own API key (Bring your own key).",
+  "author": "Peter Williams https://github.com/PeterPCW",
+  "packageManager": "pnpm@7.13.1",
+  "private": true,
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build"
+  },
+  "dependencies": {
+    "@emotion/cache": "11.10.3",
+    "@emotion/react": "11.10.4",
+    "@emotion/styled": "11.10.4",
+    "@mui/icons-material": "5.10.9",
+    "@mui/material": "5.10.8",
+    "@plasmohq/storage": "0.12.1",
+    "node-fetch": "^3.2.6",
+    "plasmo": "0.55.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.19.3",
+    "@plasmohq/prettier-plugin-sort-imports": "1.2.2",
+    "@types/chrome": "0.0.196",
+    "@types/node": "18.7.15",
+    "@types/react": "18.0.18",
+    "@types/react-dom": "18.0.6",
+    "@types/wicg-file-system-access": "^2020.9.5",
+    "prettier": "2.7.1",
+    "typescript": "4.8.2"
+  },
+  "manifest": {
+    "permissions": [
+      "activeTab",
+      "clipboardRead",
+      "clipboardWrite",
+      "scripting",
+      "storage",
+      "tabs"
+    ],
+    "sandbox": {
+      "pages": [
+        "~sandbox.html"
+      ]
+    },
+    "host_permissions": [
+      "https://*/*"
+    ]
+  }
+}
