@@ -10,7 +10,7 @@ AI Code Doc uses the OpenAI GPT-3.5 "chat" API with your own API key ("Bring you
 
 The majority of the code was sourced from [here](https://github.com/markey/ai-companion), with some small additions from [here](https://github.com/berlyozzy/md-note). I modified the prompt, API connection, and UI to fit this more specific purpose.
 
-![AI Code Doc Screenshot](screenshot.png "Screenshot")
+![AI Code Doc Screenshot](extensionScreenshot.png "Screenshot")
 
 ## Installation
 

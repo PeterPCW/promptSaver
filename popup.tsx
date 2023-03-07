@@ -366,7 +366,7 @@ function IndexPopup(): JSX.Element {
       </Modal>
 
       <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h5">AI Companion</Typography>
+        <Typography variant="h5">AI Code Doc</Typography>
 
         <Stack direction="row" spacing={1}>
           {/* History button */}
