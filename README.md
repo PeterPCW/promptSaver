@@ -14,9 +14,17 @@ The majority of the code was sourced from [here](https://github.com/markey/ai-co
 
 ## Installation
 
-Run the following:
+Install [npm](https://nodejs.org/en/download/)
+
+Sync this repo locally (Git Bash):
 
 ```bash
+git clone https://github.com/PeterPCW/aiCodeDoc
+```
+
+Build locally (cmd, don't use npm inside of Git Bash):
+
+```cmd
 pnpm build
 # or
 npm run build
@@ -35,4 +43,5 @@ Then, in Chrome, go to `chrome://extensions` and click "Load unpacked" and selec
 2. Open the extension popup (click the extension icon in the toolbar).
 3. In the popup, the selected code will be displayed as Code Snippet with a prompt prefix. You can edit this prompt as desired but it should work as-is.
 4. Review the code snippet and click "Generate".
-5. The extension should prompt you to save to a file once the Result is returned. Sometimes this fails, in which case you can use the Save to File button to launch the file location picker again. It will save the text in the Result window.
+5. The extension will runn and return the OpenAI response in Result.
+6. Use the Save to File button to launch the file location picker if you want to save the documented code. It will save the text in the Result window and append a "Source:" link to the currently active browswer window.

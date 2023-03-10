@@ -1,9 +1,5 @@
-/**
- *  OpenAI GPT-3 Text Generator (Chrome extension)
- *
- * (c) 2022 Mark Kretschmann <kretschmann@kde.org>
- *
- */
+import React from 'react';
+
 import DeleteIcon from "@mui/icons-material/Delete"
 import HistoryIcon from "@mui/icons-material/History"
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -15,7 +11,6 @@ import List from "@mui/material/List"
 import ListItemButton from "@mui/material/ListItemButton"
 import ListItemText from "@mui/material/ListItemText"
 import Modal from "@mui/material/Modal"
-import Slider from "@mui/material/Slider"
 import Stack from "@mui/material/Stack"
 import TextField from "@mui/material/TextField"
 import Tooltip from "@mui/material/Tooltip"
@@ -46,17 +41,17 @@ function IndexPopup(): JSX.Element {
   const [error, setError] = useState("")
 
   // Initialize state variables with custom useStorage hook
+  const [key, setKey] = useStorage("openai_key")
+  const [maxTokens, setMaxTokens] = useStorage("openai_max_tokens")
+  const [model, setModel] = useStorage("openai_model")
+  const [history, setHistory] = useStorage("openai_history", async (v) =>
+    v === undefined ? [] : v
+  )
   const [temperature, setTemperature] = useStorage(
     "openai_temperature",
     async (v) => (v === undefined ? 0.0 : v)
   )
-  const [history, setHistory] = useStorage("openai_history", async (v) =>
-    v === undefined ? [] : v
-  )
-  const [key, setKey] = useStorage("openai_key")
-  const [maxTokens, setMaxTokens] = useStorage("openai_max_tokens")
-  const [model, setModel] = useStorage("openai_model")
-
+  
   // Get the active tab and execute a script to get the selected text
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     // Retrieve the active tab from the list of tabs returned by the query
@@ -71,7 +66,7 @@ function IndexPopup(): JSX.Element {
       // This function will be called with the results of the script execution
       (injectionResults) => {
         // Loop through the results of the script execution
-        for (let result of injectionResults) {
+        for (const result of injectionResults) {
           // Check if the result is not empty, undefined or equal to the current selection
           if (
             result.result !== "" &&
@@ -92,53 +87,52 @@ function IndexPopup(): JSX.Element {
 
   // Generate a prompt using OpenAI's GPT-3 API
 
-  async function noAIsave() {
-    const params = {
-      prompt: result,
-    }
-    // This function saves a file to the user's device with the specified data, name, and type
-    const saveFile = async ({
-      data, // The 'data' parameter is the content of the file
-      name,
-      type
-    }) => {
-      // Function to get the URL of the active tab in the current window
-      async function getSourceURL() {
-        // Use the Chrome Tabs API to query for the active tab in the last focused window
-        const tabs = await chrome.tabs.query({
-          active: true,
-          lastFocusedWindow: true
-        });
-        // Return the URL of the first (and only) tab in the array of active tabs
-        return tabs[0].url;
-      }
-      // Call the getSourceURL() function to get the source URL of the active tab
-      const sourceURL = await getSourceURL();
-      // Add the source location URL to the end of the file content
-      data = data + `\n\n > Source: ${sourceURL}`
-
-      const bytes = new TextEncoder().encode(data);
-      const blob = new Blob([bytes], { type: `${type};charset=utf-8` });
-      // The function prompts the user to choose where to save the file and what format to save it in
-      const fileHandle = await window.showSaveFilePicker({
-        excludeAcceptAllOption: true,
-        suggestedName: name,
-        types: [
-          {
-            description: 'Text file',
-            accept: { 'text/plain': ['.txt'] },
-          },
-          {
-            description: 'Markdown file',
-            accept: { 'text/markdown': ['.md'] },
-          }
-        ]
+  // This function saves a file to the user's device with the specified data, name, and type
+  const saveFile = async ({
+    data, // The 'data' parameter is the content of the file
+    name,
+    type
+  }) => {
+    // Function to get the URL of the active tab in the current window
+    async function getSourceURL() {
+      // Use the Chrome Tabs API to query for the active tab in the last focused window
+      const tabs = await chrome.tabs.query({
+        active: true,
+        lastFocusedWindow: true
       });
-
-      const writableStream = await fileHandle.createWritable();
-      await writableStream.write(blob);
-      await writableStream.close();
+      // Return the URL of the first (and only) tab in the array of active tabs
+      return tabs[0].url;
     }
+    // Call the getSourceURL() function to get the source URL of the active tab
+    const sourceURL = await getSourceURL();
+    // Add the source location URL to the end of the file content
+    data = data + `\n\n > Source: ${sourceURL}`
+
+    const bytes = new TextEncoder().encode(data);
+    const blob = new Blob([bytes], { type: `${type};charset=utf-8` });
+    // The function prompts the user to choose where to save the file and what format to save it in
+    const fileHandle = await window.showSaveFilePicker({
+      excludeAcceptAllOption: true,
+      suggestedName: name,
+      types: [
+        {
+          description: 'Text file',
+          accept: { 'text/plain': ['.txt'] },
+        },
+        {
+          description: 'Markdown file',
+          accept: { 'text/markdown': ['.md'] },
+        }
+      ]
+    });
+
+    const writableStream = await fileHandle.createWritable();
+    await writableStream.write(blob);
+    await writableStream.close();
+  }
+
+  async function noAIsave() {
+    // Save the result field to an .md file - for a manual copy/paste without connecting to openAI
     try {
       await saveFile({
         data: result,
@@ -164,7 +158,7 @@ function IndexPopup(): JSX.Element {
     }
 
     //Build the prompt into the messages format for a chat completion endpoint
-    var chatParams = params
+    const chatParams = params
     chatParams.messages = [{ role: "user", content: prompt + selection }];
 
     // Set up the request options
@@ -208,49 +202,8 @@ function IndexPopup(): JSX.Element {
     const newHistory = [filteredText, ...history]
     setHistory(newHistory)
 
-    // This function saves a file to the user's device with the specified data, name, and type
-    const saveFile = async ({
-      data, // The 'data' parameter is the content of the file
-      name,
-      type
-    }) => {
-      // Function to get the URL of the active tab in the current window
-      async function getSourceURL() {
-        // Use the Chrome Tabs API to query for the active tab in the last focused window
-        const tabs = await chrome.tabs.query({
-          active: true,
-          lastFocusedWindow: true
-        });
-        // Return the URL of the first (and only) tab in the array of active tabs
-        return tabs[0].url;
-      }
-      // Call the getSourceURL() function to get the source URL of the active tab
-      const sourceURL = await getSourceURL();
-      // Add the source location URL to the end of the file content
-      data = data + `\n\n > Source: ${sourceURL}`
-
-      const bytes = new TextEncoder().encode(data);
-      const blob = new Blob([bytes], { type: `${type};charset=utf-8` });
-      // The function prompts the user to choose where to save the file and what format to save it in
-      const fileHandle = await window.showSaveFilePicker({
-        excludeAcceptAllOption: true,
-        suggestedName: name,
-        types: [
-          {
-            description: 'Text file',
-            accept: { 'text/plain': ['.txt'] },
-          },
-          {
-            description: 'Markdown file',
-            accept: { 'text/markdown': ['.md'] },
-          }
-        ]
-      });
-
-      const writableStream = await fileHandle.createWritable();
-      await writableStream.write(blob);
-      await writableStream.close();
-    }
+    // Save the returned text from OpenAI API to an .md file
+    /* Fails because of error I don't want to debug, forcing second click of "Save to File" button fixes this
     try {
       await saveFile({
         data: filteredText,
@@ -260,13 +213,13 @@ function IndexPopup(): JSX.Element {
     } catch (error) {
       setResult(...result, error.message)
       return
-    }
+    }*/
   }
 
   /**
    * Evaluate code in sandboxed iframe.
    * @param {string} code The code to evaluate
-   */
+   */ 
   //Function that evaluates a given code in a sandboxed environment within an iframe
   function evalInSandbox(code: string): void {
     // Get iframe element that holds a reference for the "sandbox" environment
@@ -278,14 +231,15 @@ function IndexPopup(): JSX.Element {
     // Post message containing code to sandbox
     iframe.contentWindow.postMessage(code, "*")
   }
-
-  // Function that updates the temperature value in the component's state based on a new value from an input event. The new value is cast as a number using 'as number'
-  const handleTemperatureChange = (
-    event: Event,
-    newValue: number | number[]
-  ) => {
-    // Update temperature value in state based on new value from input
-    setTemperature(newValue as number)
+  
+  // This is an asynchronous function that moves the caret to the end of the input field when called
+  async function moveCaretAtEnd(e) {
+    // Declare a constant variable called temp_value and assign it the value of the input field
+    const temp_value = e.target.value
+    // Set the value of the input field to an empty string
+    e.target.value = ''
+    // Set the value of the input field to the original value stored in temp_value, which moves the caret to the end
+    e.target.value = temp_value
   }
 
   return (
@@ -389,11 +343,12 @@ function IndexPopup(): JSX.Element {
         label="Code Snippet"
         multiline
         autoFocus
+        onFocus={(p) => moveCaretAtEnd(p)}
         minRows={4}
-        onChange={(e) => setPrompt(e.target.value)}
+        onChange={(p) => setPrompt(p.target.value)}
         value={prompt}
-        onKeyDown={(e) => {
-          if (e.getModifierState("Control") && e.key === "c") {
+        onKeyDown={(p) => {
+          if (p.getModifierState("Control") && p.key === "c") {
             navigator.clipboard.writeText(result) // Copy to clipboard
           }
         }}
@@ -409,10 +364,10 @@ function IndexPopup(): JSX.Element {
         label="Result (Ctrl+C➔Clipboard)"
         multiline
         minRows={4}
-        onChange={(e) => setResult(e.target.value)}
+        onChange={(r) => setResult(r.target.value)}
         value={result}
-        onKeyDown={(e) => {
-          if (e.getModifierState("Control") && e.key === "c") {
+        onKeyDown={(r) => {
+          if (r.getModifierState("Control") && r.key === "c") {
             navigator.clipboard.writeText(result) // Copy to clipboard
           }
         }}

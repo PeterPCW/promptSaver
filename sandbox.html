@@ -1,5 +1,9 @@
 <!-- Sandbox for eval() code execution-->
-<html>
+<!DOCTYPE html>
+<html lang="EN" xml:lang="en">
+  <head>
+    <title>sandbox</title>
+  </head>
   <script>
     window.addEventListener("message", async function (event) {
       event.source.window.postMessage(eval(event.data), event.origin)
