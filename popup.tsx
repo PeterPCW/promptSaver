@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { createGlobalStyle } from 'styled-components';
 import DeleteIcon from "@mui/icons-material/Delete"
 import HistoryIcon from "@mui/icons-material/History"
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -36,7 +37,7 @@ function IndexPopup(): JSX.Element {
   const [openHistory, setOpenHistory] = useState(false)
   const [prompt, setPrompt] = useState("Annotate the code snippet below with inline comments using simple terms to describe all functions and variables. Return all of the comments and original code in a single code snippet.\n\nThe rest of this prompt is the code snippet:\n\n")
   const [buttonText, setButtonText] = useState("Generate")
-  const [result, setResult] = useState("")
+  const [result, setResult] = useState("Open AI Response")
   const [error, setError] = useState("")
 
   // Initialize state variables with custom useStorage hook
@@ -105,7 +106,7 @@ function IndexPopup(): JSX.Element {
     // Call the getSourceURL() function to get the source URL of the active tab
     const sourceURL = await getSourceURL();
     // Add the source location URL to the end of the file content
-    data = data + `\n\n > Source: ${sourceURL}`
+    data = data + `\n\n// Source: ${sourceURL} \n\n/*\nExplanation:\n\n*/`
 
     const bytes = new TextEncoder().encode(data);
     const blob = new Blob([bytes], { type: `${type};charset=utf-8` });
@@ -240,148 +241,276 @@ function IndexPopup(): JSX.Element {
     // Set the value of the input field to the original value stored in temp_value, which moves the caret to the end
     e.target.value = temp_value
   }
+  
+   // This class removes the extra padding added by the HTML <body> section that sits on top of the rendered app
+   const GlobalStyle = createGlobalStyle`
+      body {
+         background-color:#212121;
+         border-radius: 20px;
+      }
+   `;
 
-  return (
-    <Stack
-      direction="column"
-      minWidth={550}
-      spacing={2}
-      justifyContent="flex-start">
-      {/* Error modal */}
-      <Modal open={error !== ""} onClose={() => setError("")}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 300,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4
-          }}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Error: Please check your API key
+   return (
+      <Box sx={{ p: 0, border: '10px orange' }}>
+         <GlobalStyle />
+         <Stack
+            direction="column"
+            minWidth={550}
+            spacing={2}
+            sx={{
+               bgcolor: "#212121",
+               margin: 0,
+               padding: 0,
+            }}
+            justifyContent="flex-start">
+            {/* Error modal */}
+            <Modal
+               open={error !== ""}
+               onClose={() => setError("")}
+               sx={{
+               margin: 0,
+               padding: 0,
+               }}>
+               <Box
+                  sx={{
+                     position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 300,
+                  bgcolor: "#212121",
+                  margin: 0,
+                  padding: 0,
+                  border: "none",
+                  boxShadow: 24,
+               }}>
+                  <Typography
+                     id="modal-modal-title"
+                  variant="h6"
+                  component="h2"
+                  sx={{ color: "#BBBBBB" }}>
+                     Error: Please check your API key <br />
+                     {error.message}
+                  </Typography>
+               </Box>
+            </Modal>
 
-            {error.message}
-          </Typography>
-        </Box>
-      </Modal>
+            {/* History modal with vertical scrolling and clickable items */}
+            <Modal open={openHistory}>
+               <Box
+               sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 300,
+                  bgcolor: "#212121",
+                  margin: 0,
+                  padding: 0,
+                  border: "none",
+                  boxShadow: 24,
+               }}>
+                  <Stack
+                     direction="row"
+                     justifyContent="space-between"
+                     sx={{
+                        bgcolor: "#212121",
+                        margin: 0,
+                        padding: 0,
+                     }}>
+                     <Typography variant="h6" component="h2" sx={{ color: "#BBBBBB" }}>
+                        History
+                     </Typography>
+                     <IconButton onClick={setHistory.bind(null, [])}>
+                        <Tooltip title="Clear history">
+                           <DeleteIcon />
+                        </Tooltip>
+                     </IconButton>
+                  </Stack>
+                  <Divider />
+                  <Box
+                     sx={{
+                        overflowY: "scroll",
+                        height: 400,
+                        bgcolor: "#212121",
+                        margin: 0,
+                        padding: 0,
+                     }}>
+                     <List>
+                        {history && history.length > 0 ? (
+                           // If history exists and is not empty
+                           history.map((item, index) => (
+                              // If item is clicked copy item to prompt and close the modal
+                              <ListItemButton
+                                 key={index}
+                                 onClick={() => {
+                                 setResult(item);
+                                 setOpenHistory(false);
+                                 }}>
+                                 <ListItemText primary={index + 1 + ". " + item} />
+                              </ListItemButton>
+                           ))
+                        ) : (
+                           <ListItemButton>
+                              <ListItemText primary="<empty>" />
+                           </ListItemButton>
+                        )}
+                     </List>
+                  </Box>
+               </Box>
+            </Modal>
+          
+            <Stack
+               direction="row"
+               justifyContent="space-between"
+               sx={{
+                  bgcolor: "#212121",
+                  paddingLeft: "0px",
+                  paddingRight: "0px"
+               }}>
+               <Typography variant="h5" sx={{color: "#BBBBBB" }}>AI Code Doc</Typography>
+               <Stack direction="row" spacing={1}>
+                  {/* History button */}
+                  <IconButton onClick={() => setOpenHistory(true)}>
+                     <Tooltip title="History">
+                        <HistoryIcon sx={{color: "#BBBBBB" }}/>
+                     </Tooltip>
+                  </IconButton>
+                  {/* Settings button */}
+                  <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
+                     <Tooltip title="Settings">
+                        <SettingsIcon sx={{color: "#BBBBBB" }}/>
+                     </Tooltip>
+                  </IconButton>
+               </Stack>
+            </Stack>
+            
+            <TextField
+               label="Code Snippet"
+               sx={{
+                  backgroundColor: "#212121",
+                  color: "#BBBBBB",
+                  "& .MuiInputBase-root": {
+                     border: "none",
+                     margin: 0,
+                     padding: 1,
+                     "& .MuiOutlinedInput-root": {
+                        borderColor: "#BBBBBB",
+                        color: "#BBBBBB"
+                     },
+                     "& .MuiOutlinedInput-root.Mui-focused": {
+                        "& > fieldset": {
+                           borderColor: "#BBBBBB"
+                        },
+                        '&:hover fieldset': {
+                           borderColor: "#BBBBBB"
+                        },
+                        '&.Mui-focused fieldset': {
+                           borderColor: "#BBBBBB"
+                        },
+                     },
+                     '&.Mui-focused fieldset': {
+                        borderColor: '#BBBBBB',
+                     },
+                     '& label.Mui-focused': {
+                        display: "none",
+                     }
+                  }
+               }}
+               inputProps={{ style: { color: "#BBBBBB" } }}
+               multiline
+               autofocus
+               onFocus={(p) => moveCaretAtEnd(p)}
+               minRows={4}
+               onChange={(p) => setPrompt(p.target.value)}
+               value={prompt}
+               onKeyDown={(p) => {
+                  if (r.getModifierState("Control") && p.key === "c") {
+                     navigator.clipboard.writeText(result) // Copy result to clipboard
+                  }
+               }}
+            />
+            <Button
+               variant="contained"
+               sx={{
+                  backgroundColor: "#555",
+                  color: "#BBBBBB",
+                  "&:hover": {
+                     backgroundColor: "#666"
+                  }
+               }}
+               onClick={createCompletion}>
+               {buttonText}
+            </Button>
+            <Divider sx={{ backgroundColor: "#666" }} />
+            <TextField
+               label="Result"
+               sx={{
+                  backgroundColor: "#212121",
+                  color: "#BBBBBB",
+                  "& .MuiInputBase-root": {
+                     border: "none",
+                     margin: 0,
+                     padding: 1,
+                     "& .MuiOutlinedInput-root": {
+                        borderColor: "#BBBBBB",
+                        color: "#BBBBBB"
+                     },
+                     "& .MuiOutlinedInput-root.Mui-focused": {
+                        "& > fieldset": {
+                           borderColor: "#BBBBBB"
+                        },
+                        '&:hover fieldset': {
+                           borderColor: "#BBBBBB"
+                        },
+                        '&.Mui-focused fieldset': {
+                           borderColor: "#BBBBBB"
+                        },
+                     },
+                     '&.Mui-focused fieldset': {
+                        borderColor: '#BBBBBB',
+                     },
+                     '& label.Mui-focused': {
+                        display: "none",
+                     }
+                  }
+               }}
+               inputProps={{ style: { color: "#BBBBBB" } }}
+               multiline
+               minRows={4}
+               onChange={(r) => setResult(r.target.value)}
+               value={result}
+               onBeforeInput={(event) => event.target.select()}
+               onKeyDown={(r) => {
+                  if (r.getModifierState("Control") && r.key === "c") {
+                     navigator.clipboard.writeText(result) // Copy to clipboard
+                  }
+                  if (e.getModifierState("Control") && e.key === "Enter") {
+                     noAIsave() // same as clicking Safe to File
+                  }
+               }}
+            />
 
-      {/* History modal with vertical scrolling and clickable items */}
-      <Modal open={openHistory}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 500,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4
-          }}>
-          <Stack direction="row" justifyContent="space-between">
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              History
-            </Typography>
-            <IconButton onClick={setHistory.bind(null, [])}>
-              <Tooltip title="Clear history">
-                <DeleteIcon />
-              </Tooltip>
-            </IconButton>
-          </Stack>
-          <Divider />
-          <Box sx={{ overflowY: "scroll", height: 400 }}>
-            <List>
-              {history && history.length > 0 ? ( // If history exists and is not empty
-                history.map((item, index) => (
-                  // If item is clicked copy item to prompt and close the modal
-                  <ListItemButton
-                    key={index}
-                    onClick={() => {
-                      setResult(item)
-                      setOpenHistory(false)
-                    }}>
-                    <ListItemText primary={index + 1 + ". " + item} />
-                  </ListItemButton>
-                ))
-              ) : (
-                <ListItemButton>
-                  <ListItemText primary="<empty>" />
-                </ListItemButton>
-              )}
-            </List>
-          </Box>
-        </Box>
-      </Modal>
-
-      <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h5">AI Code Doc</Typography>
-
-        <Stack direction="row" spacing={1}>
-          {/* History button */}
-          <IconButton onClick={() => setOpenHistory(true)}>
-            <Tooltip title="History">
-              <HistoryIcon />
-            </Tooltip>
-          </IconButton>
-
-          {/* Settings button */}
-          <IconButton onClick={() => chrome.runtime.openOptionsPage()}>
-            <Tooltip title="Settings">
-              <SettingsIcon />
-            </Tooltip>
-          </IconButton>
-        </Stack>
-      </Stack>
-
-      <TextField
-        label="Code Snippet"
-        multiline
-        autoFocus
-        onFocus={(p) => moveCaretAtEnd(p)}
-        minRows={4}
-        onChange={(p) => setPrompt(p.target.value)}
-        value={prompt}
-        onKeyDown={(p) => {
-          if (p.getModifierState("Control") && p.key === "c") {
-            navigator.clipboard.writeText(result) // Copy to clipboard
-          }
-        }}
-      />
-
-      <Button variant="contained" onClick={createCompletion}>
-        {buttonText}
-      </Button>
-
-      <Divider />
-
-      <TextField
-        label="Result (Ctrl+C➔Clipboard)"
-        multiline
-        minRows={4}
-        onChange={(r) => setResult(r.target.value)}
-        value={result}
-        onKeyDown={(r) => {
-          if (r.getModifierState("Control") && r.key === "c") {
-            navigator.clipboard.writeText(result) // Copy to clipboard
-          }
-        }}
-      />
-
-      <Button variant="contained" onClick={noAIsave}>
-        Save to File
-      </Button>
-
-      <iframe
-        src="up_/sandbox.html"
-        id="sandbox"
-        style={{ display: "none" }}></iframe>
-    </Stack>
-  )
+            <Button
+               variant="contained"
+               sx={{
+                  backgroundColor: "#555",
+                  color: "#BBBBBB",
+                  "&:hover": {
+                     backgroundColor: "#666"
+                  }
+               }}
+               onClick={noAIsave}>
+               Save to File
+            </Button>
+            <iframe
+               src="up_/sandbox.html"
+               id="sandbox"
+               style={{ display: "none" }}>
+            </iframe>
+         </Stack>
+      </Box>
+   )
 }
 
 export default IndexPopup

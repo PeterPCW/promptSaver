@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Container from '@mui/material/Container';
 import FormControl from "@mui/material/FormControl"
 import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
@@ -28,7 +29,14 @@ function OptionsIndex() {
   }
 
   return (
-    <Stack maxWidth={600} spacing={2}>
+   <Container sx={{ bgcolor: "gray", borderColor: "gray" }}>
+    <Stack
+      maxWidth={600}
+      spacing={2}
+      sx={{
+        bgcolor: "gray",
+        borderColor: "gray"
+      }}>
       <Typography variant="h5">OpenAI Extension Options</Typography>
 
       <TextField
@@ -45,11 +53,14 @@ function OptionsIndex() {
           value={model}
           onChange={(e) => setModel(e.target.value)}>
           <MenuItem value="gpt-3.5-turbo">gpt-3.5-turbo</MenuItem>
-          <MenuItem value="code-davinci-002">code-davinci-002</MenuItem>
-          <MenuItem value="text-davinci-003">text-davinci-003</MenuItem>
         </Select>
       </FormControl>
-      <Stack direction="row" spacing={2} justifyContent="flex-start">
+      <Stack
+        direction="row"
+        spacing={2} justifyContent="flex-start"
+        sx={{
+           bgcolor: "gray"
+         }}>
         <Typography variant="subtitle2">Max_Tokens:</Typography>
         <Slider
           size="small"
@@ -63,6 +74,7 @@ function OptionsIndex() {
         />
       </Stack>
     </Stack>
+   </Container>
   )
 }
 
