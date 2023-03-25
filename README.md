@@ -45,3 +45,12 @@ Then, in Chrome, go to `chrome://extensions` and click "Load unpacked" and selec
 4. Review the code snippet and click "Generate".
 5. The extension will runn and return the OpenAI response in Result.
 6. Use the Save to File button to launch the file location picker if you want to save the documented code. It will save the text in the Result window and append a "Source:" link to the currently active browswer window.
+
+## Roadmap
+
+Some features I want to include/improve:
+* More prompt options - could limit to "fix this code", etc. or expand beyond the world of code
+* Right-click menu on the selected text instead of clicking to the extension icon at the top (although it is easy to hot-key)
+* Grow window or scroll to bottom always - Save to File button hides when Response is large
+* Options page as a modal instead of a new window
+* Better CSS, possibly multiple styles (if releasing)

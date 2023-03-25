@@ -35,7 +35,7 @@ function getTextSelection(): string {
 function IndexPopup(): JSX.Element {
   // Initialize state variables with useState hook
   const [openHistory, setOpenHistory] = useState(false)
-  const [prompt, setPrompt] = useState("Annotate the code snippet below with inline comments using simple terms to describe all functions and variables. Return all of the comments and original code in a single code snippet.\n\nThe rest of this prompt is the code snippet:\n\n")
+  const [prompt, setPrompt] = useState("Annotate the code snippet below with inline comments for every line that describe all of the classes, functions, methods, loops, cases, and variables in simple terms. Return all of the comments and original code in a single code snippet.\n\nThe rest of this prompt is the code snippet:\n\n")
   const [buttonText, setButtonText] = useState("Generate")
   const [result, setResult] = useState("Open AI Response")
   const [error, setError] = useState("")
@@ -480,7 +480,7 @@ function IndexPopup(): JSX.Element {
                minRows={4}
                onChange={(r) => setResult(r.target.value)}
                value={result}
-               onBeforeInput={(event) => event.target.select()}
+               onFocus={(r) => r.target.select()}
                onKeyDown={(r) => {
                   if (r.getModifierState("Control") && r.key === "c") {
                      navigator.clipboard.writeText(result) // Copy to clipboard
