@@ -1,16 +1,14 @@
-# AI Code Documenter Chrome Extension
+# Prompt Saver Chrome Extension
 
 ## Overview
 
-Chrome Extension that uses openAI's API to add inline comments to a snippet of code.
+Chrome Extension that saves prompts from selected text or user input. It can also test prompts using openAI's API.
 
-Select the snippet on a web page and click on the extension icon to preview then generate the documented result. You can optionally save to a local .md for record keeping.
+Select the snippet on a web page and click on the extension icon to preview then test or save as you wish. You can optionally save to a local .md for record keeping as well.
 
-AI Code Doc uses the OpenAI GPT-3.5 "chat" API with your own API key ("Bring your own key").
+Prompt Saver uses the OpenAI GPT-3.5 "chat" API with your own API key ("Bring your own key"). This is currently the most cost-effective API endpoint, but you may want GPT-4 (or later in the future) for more functional use cases.
 
-The majority of the code was sourced from [here](https://github.com/markey/ai-companion), with some small additions from [here](https://github.com/berlyozzy/md-note). I modified the prompt, API connection, and UI to fit this more specific purpose.
-
-![AI Code Doc Screenshot](extensionScreenshot.png "Screenshot")
+![Prompt Saver Screenshot](extensionScreenshot.png "Screenshot")
 
 ## Installation
 
@@ -19,7 +17,7 @@ Install [npm](https://nodejs.org/en/download/)
 Sync this repo locally (Git Bash):
 
 ```bash
-git clone https://github.com/PeterPCW/aiCodeDoc
+git clone https://github.com/PeterPCW/promptSaver
 ```
 
 Build locally (cmd, don't use npm inside of Git Bash):
@@ -30,7 +28,7 @@ pnpm build
 npm run build
 ```
 
-Then, in Chrome, go to `chrome://extensions` and click "Load unpacked" and select the `build/chrome-mv3-prod` directory. 
+Then, in Chrome, go to `chrome://extensions` and click "Load unpacked" and select the `build/chrome-mv3-prod` directory.
 
 ## Setup
 
@@ -49,8 +47,10 @@ Then, in Chrome, go to `chrome://extensions` and click "Load unpacked" and selec
 ## Roadmap
 
 Some features I want to include/improve:
-* More prompt options - could limit to "fix this code", etc. or expand beyond the world of code
+
+* More default prompt options - best of the best saved for you already
 * Right-click menu on the selected text instead of clicking to the extension icon at the top (although it is easy to hot-key)
+* One-click paste to test input field when on ChatGPT, Bard, Poe, Pi, etc.
 * Grow window or scroll to bottom always - Save to File button hides when Response is large
 * Options page as a modal instead of a new window
 * Better CSS, possibly multiple styles (if releasing)
