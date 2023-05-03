@@ -1,5 +1,7 @@
 # AI Code Documenter Chrome Extension
 
+This branch saves the original version of this extension, which was built around code documentation. In the main branch I am updating the extension to be more general about saving/testing prompts in the browser.
+
 ## Overview
 
 Chrome Extension that uses openAI's API to add inline comments to a snippet of code.
