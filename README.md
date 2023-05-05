@@ -37,20 +37,22 @@ Then, in Chrome, go to `chrome://extensions` and click "Load unpacked" and selec
 
 ## Usage
 
-1. Select some code on a webpage (this is optional, you can also just type in the Code Snippet text box).
-2. Open the extension popup (click the extension icon in the toolbar).
-3. In the popup, the selected code will be displayed as Code Snippet with a prompt prefix. You can edit this prompt as desired but it should work as-is.
-4. Review the code snippet and click "Generate".
-5. The extension will runn and return the OpenAI response in Result.
-6. Use the Save to File button to launch the file location picker if you want to save the documented code. It will save the text in the Result window and append a "Source:" link to the currently active browswer window.
+1. Setup a Google Sheet to save all of your prompts to the cloud
+2. Select some text on a webpage (this is optional, you can also just type in the prompt).
+3. Open the extension popup (click the extension icon in the toolbar).
+4. In the popup, the selected prompt will be displayed. You can edit this prompt as desired but it should work as-is.
+5. Click "Test" if you want to see a response from the prompt right now.
+6. The extension will run and return the OpenAI response in Result.
+7. Use the Save button to save the Prompt field to Sheets. It will add a "source" in the second column linking to the currently active browswer window.
 
 ## Roadmap
 
 Some features I want to include/improve:
 
-* More default prompt options - best of the best saved for you already
 * Right-click menu on the selected text instead of clicking to the extension icon at the top (although it is easy to hot-key)
-* One-click paste to test input field when on ChatGPT, Bard, Poe, Pi, etc.
-* Grow window or scroll to bottom always - Save to File button hides when Response is large
+* Display all saved prompts within the extension
+* Default prompts - best of the best saved for you already (auto-generate the Sheet?)
+* One-click paste to input field when on ChatGPT, Bard, Poe, Pi, etc.
+* Grow window or scroll to bottom always - Save button hides when Result is large
 * Options page as a modal instead of a new window
 * Better CSS, possibly multiple styles (if releasing)

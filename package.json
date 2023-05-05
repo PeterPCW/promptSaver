@@ -1,8 +1,8 @@
 {
-  "name": "aiCodeDoc",
-  "displayName": "AI Code Doc",
+  "name": "promptsaver",
+  "displayName": "Prompt Saver",
   "version": "0.0.1",
-  "description": "Chrome Extension that uses openAI's API to add inline comments to a snippet of code.`r`nSelect the snippet on a web page and click on the extension icon to preview then generate the documented result. You can optionally save to a local .md for record keeping.`r`nAI Code Doc uses the OpenAI GPT-3.5 chat API endpoints with your own API key (Bring your own key).",
+  "description": "A chrome extension to save prompts found online. It connects with OpenAI API to test them if desired, but the point is to quickly save responses. Updated to the chat completion with the 3.5 API available.",
   "author": "Peter Williams <49111837+PeterPCW@users.noreply.github.com>",
   "packageManager": "pnpm@7.13.1",
   "private": true,
